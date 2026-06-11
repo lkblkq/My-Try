@@ -654,7 +654,7 @@ function renderModal() {
   `;
 
   elements.modalRoot.onclick = (event) => {
-    if (event.target === elements.modalRoot.firstElementChild || event.target.closest("[data-modal-close]")) {
+    if (event.target.closest("[data-modal-close]")) {
       closeModal();
       return;
     }
