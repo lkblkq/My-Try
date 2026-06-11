@@ -383,7 +383,7 @@ function openProjectModal() {
     onSubmit: (formData) => {
       const name = formData.get("name").trim();
       if (!name) {
-        return;
+        return false;
       }
 
       const newProject = createProject(currentStatus, name);
@@ -406,7 +406,7 @@ function openRenameProjectModal(project) {
     onSubmit: (formData) => {
       const name = formData.get("name").trim();
       if (!name) {
-        return;
+        return false;
       }
 
       updateProject(project.id, { name });
@@ -440,7 +440,7 @@ function openSetFailedModal(project) {
     onSubmit: (formData) => {
       const reason = formData.get("reason").trim();
       if (!reason) {
-        return;
+        return false;
       }
 
       updateProject(project.id, {
@@ -610,25 +610,27 @@ function openFormModal({ title, body, onSubmit }) {
   appState.modal = {
     title,
     renderBody: () => `
-      <form id="modal-form">
+      <form id="modal-form" novalidate>
         ${body}
       </form>
     `,
     footer: `
       <button class="ghost-button" data-modal-close type="button">Cancel</button>
-      <button class="primary-button" data-modal-submit type="button">Submit</button>
+      <button class="primary-button" type="submit" form="modal-form">Submit</button>
     `,
-    onClick: (event) => {
-      if (event.target.closest("[data-modal-submit]")) {
-        const form = document.querySelector("#modal-form");
-        if (!form.reportValidity()) {
-          return;
-        }
-
-        const formData = new FormData(form);
-        onSubmit(formData);
-        closeModal();
+    onSubmit: (form) => {
+      if (!form.reportValidity()) {
+        return false;
       }
+
+      const formData = new FormData(form);
+      const result = onSubmit(formData);
+      if (result === false) {
+        return false;
+      }
+
+      closeModal();
+      return true;
     },
   };
   renderModal();
@@ -661,6 +663,14 @@ function renderModal() {
 
     appState.modal?.onClick?.(event);
   };
+
+  const form = elements.modalRoot.querySelector("#modal-form");
+  if (form) {
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      appState.modal?.onSubmit?.(form);
+    });
+  }
 }
 
 function closeModal() {
