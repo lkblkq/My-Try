@@ -35,11 +35,11 @@ async function boot() {
 async function loadBoard() {
   const cached = window.localStorage.getItem(STORAGE_KEY);
   if (cached) {
-    return JSON.parse(cached);
+    return normalizeBoard(JSON.parse(cached));
   }
 
   const response = await fetch("./data/seed.json");
-  const seed = await response.json();
+  const seed = normalizeBoard(await response.json());
   persist(seed);
   return seed;
 }
@@ -62,6 +62,15 @@ function bindEvents() {
   });
 
   elements.projectTabs.addEventListener("click", (event) => {
+    const deleteButton = event.target.closest("[data-tab-delete-id]");
+    if (deleteButton) {
+      const project = findProject(deleteButton.dataset.tabDeleteId);
+      if (project) {
+        openDeleteProjectModal(project);
+      }
+      return;
+    }
+
     const button = event.target.closest("[data-project-id]");
     if (!button) {
       return;
@@ -173,7 +182,16 @@ function renderProjectTabs() {
     const activeClass = project.id === appState.board.selectedProjectId ? "active" : "";
     return `
       <button class="project-tab ${activeClass}" data-project-id="${project.id}" type="button">
-        ${escapeHtml(project.name)}
+        <span class="project-tab-label">${escapeHtml(project.name)}</span>
+        <span
+          class="project-tab-delete"
+          data-tab-delete-id="${project.id}"
+          role="button"
+          aria-label="删除 ${escapeAttribute(project.name)}"
+          title="删除项目"
+        >
+          ×
+        </span>
       </button>
     `;
   }).join("");
@@ -242,7 +260,6 @@ function renderToolbar(project) {
 
   if (project.status !== "failed") {
     buttons.push(buttonMarkup("ghost-button", "change-name", "Change Name"));
-    buttons.push(buttonMarkup("ghost-button", "delete-project", "Delete Project"));
   }
 
   if (project.status === "prepare") {
@@ -562,6 +579,9 @@ function openDeleteCardModal(projectId, cardId) {
     onConfirm: () => {
       const project = findProject(projectId);
       project.cards = project.cards.filter((card) => card.id !== cardId);
+      if (project.cards.length === 0) {
+        project.cards = [createEmptyCard()];
+      }
       stampProject(project);
       persistAndRender();
     },
@@ -662,13 +682,7 @@ function setSelectedProject(projectId) {
 
 function addCard(projectId) {
   const project = findProject(projectId);
-  project.cards.unshift({
-    id: crypto.randomUUID(),
-    dateDuration: { start: null, end: null },
-    thing: "",
-    data: "",
-    updatedAt: new Date().toISOString(),
-  });
+  project.cards.unshift(createEmptyCard());
   stampProject(project);
   persistAndRender();
 }
@@ -765,7 +779,7 @@ function createProject(status, name) {
     priority: status === "ongoing" || status === "failed" ? null : null,
     failedReason: "",
     updatedAt: new Date().toISOString(),
-    cards: [],
+    cards: [createEmptyCard()],
   };
 }
 
@@ -785,6 +799,33 @@ function persistAndRender() {
 
 function persist(board) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(board));
+}
+
+function normalizeBoard(board) {
+  board.projects = board.projects.map((project) => {
+    const nextProject = {
+      ...project,
+      cards: Array.isArray(project.cards) ? project.cards : [],
+    };
+
+    if (nextProject.cards.length === 0) {
+      nextProject.cards = [createEmptyCard()];
+    }
+
+    return nextProject;
+  });
+
+  return board;
+}
+
+function createEmptyCard() {
+  return {
+    id: crypto.randomUUID(),
+    dateDuration: { start: null, end: null },
+    thing: "",
+    data: "",
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 function exportBoardData() {
