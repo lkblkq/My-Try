@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Experience Board</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="status-panel">
+        <div class="panel-title">Status</div>
+        <nav id="status-nav" class="status-nav" aria-label="Status navigation"></nav>
+        <div class="status-footer">
+          <div class="helper-text">当前编辑结果保存在这个浏览器里。</div>
+          <div class="status-footer-actions">
+            <button id="export-button" class="ghost-button" type="button">Export JSON</button>
+            <button id="reset-button" class="ghost-button" type="button">Reset</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <section class="project-strip">
+          <div id="project-tabs" class="project-tabs" aria-label="Projects"></div>
+          <button id="add-project-button" class="ghost-button icon-button" type="button">
+            +
+          </button>
+        </section>
+
+        <section id="detail-view" class="detail-view"></section>
+      </main>
+    </div>
+
+    <div id="modal-root"></div>
+
+    <template id="empty-state-template">
+      <div class="empty-state">
+        <h2>这个状态里还没有项目</h2>
+        <p>先新增一个项目，我们再往里面补 Why、Risk 和卡片内容。</p>
+      </div>
+    </template>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
