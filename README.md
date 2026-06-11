@@ -1,6 +1,7 @@
 # Experience Board
 
 静态版的经验管理面板，适合直接部署到 GitHub Pages。
+https://lkblkq.github.io/My-Try/
 
 ## 现在这版有什么
 
