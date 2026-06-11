@@ -610,7 +610,7 @@ function openFormModal({ title, body, onSubmit }) {
   appState.modal = {
     title,
     renderBody: () => `
-      <form id="modal-form" novalidate>
+      <form id="modal-form" novalidate method="post" action="">
         ${body}
       </form>
     `,
@@ -688,13 +688,22 @@ function renderModal() {
       if (event.key === "Enter" && isTextarea && !event.metaKey && !event.ctrlKey) {
         return;
       }
+
+      if (event.key === "Enter" && !isTextarea) {
+        event.preventDefault();
+        submitModalForm(form);
+      }
     });
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      appState.modal?.onSubmit?.(form);
+      submitModalForm(form);
     });
   }
+}
+
+function submitModalForm(form) {
+  return appState.modal?.onSubmit?.(form);
 }
 
 function closeModal() {
