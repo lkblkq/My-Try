@@ -147,6 +147,14 @@ function handleDetailClick(event) {
     openCardTextModal(project.id, actionTarget.dataset.cardId, "data", "Data");
   }
 
+  if (action === "edit-card-income") {
+    openCardAmountModal(project.id, actionTarget.dataset.cardId, "income", "Income");
+  }
+
+  if (action === "edit-card-expense") {
+    openCardAmountModal(project.id, actionTarget.dataset.cardId, "expense", "Expense");
+  }
+
   if (action === "delete-card") {
     openDeleteCardModal(project.id, actionTarget.dataset.cardId);
   }
@@ -208,6 +216,7 @@ function renderDetailView() {
   const statusTrail = project.status === "failed" && project.previousStatus
     ? `${STATUS_LABELS[project.previousStatus]} -> Failed`
     : `${STATUS_LABELS[project.status]} · Updated ${formatDateTime(project.updatedAt)}`;
+  const cardTotals = getCardTotals(project.cards);
 
   elements.detailView.innerHTML = `
     <div class="detail-header">
@@ -221,27 +230,23 @@ function renderDetailView() {
     </div>
 
     <section class="meta-grid">
-      <article class="meta-card">
-        <div class="meta-label">Why</div>
-        <div class="meta-value">${renderTextValue(project.why)}</div>
-        ${project.status !== "failed" ? '<div class="meta-actions"><button class="text-link" data-action="edit-why" type="button">Edit</button></div>' : ""}
-      </article>
-      <article class="meta-card">
-        <div class="meta-label">Risk</div>
-        <div class="meta-value">${renderRisk(project.risk)}</div>
-        ${project.status !== "failed" ? '<div class="meta-actions"><button class="text-link" data-action="edit-risk" type="button">Edit</button></div>' : ""}
-      </article>
-      <article class="meta-card">
-        <div class="meta-label">Priority</div>
-        <div class="meta-value">${renderPriority(project.priority, project.status)}</div>
-        ${showPriorityEditor(project) ? '<div class="meta-actions"><button class="text-link" data-action="edit-priority" type="button">Edit</button></div>' : ""}
-      </article>
+      ${renderMetaCard("Why", renderTextValue(project.why), project.status !== "failed" ? "edit-why" : "")}
+      ${renderMetaCard("Risk", renderRisk(project.risk), project.status !== "failed" ? "edit-risk" : "")}
+      ${renderMetaCard("Priority", renderPriority(project.priority, project.status), showPriorityEditor(project) ? "edit-priority" : "")}
     </section>
 
     ${project.status === "failed" ? renderFailedCallout(project) : ""}
 
     <section class="cards-header">
-      <h2 class="section-title">Cards</h2>
+      <div class="section-heading">
+        <h2 class="section-title">Details</h2>
+        ${project.status === "ongoing" ? `
+          <div class="section-metrics">
+            <span>Expense ${formatAmount(cardTotals.expense)}</span>
+            <span>Income ${formatAmount(cardTotals.income)}</span>
+          </div>
+        ` : ""}
+      </div>
       <div class="helper-text">${project.status === "failed" ? "Failed 状态下只展示，不可编辑卡片。" : "新增的空白卡片会插到最上面。"}</div>
     </section>
 
@@ -306,17 +311,34 @@ function renderFailedCallout(project) {
 
 function renderCard(project, card, index) {
   const readonly = project.status === "failed";
+  const showMoneyRows = project.status === "ongoing";
   return `
     <article class="card-item">
       <div class="card-toolbar">
-        <div class="card-index">Card ${project.cards.length - index}</div>
-        ${readonly ? "" : buttonMarkup("text-link", "delete-card", "Delete", { cardId: card.id })}
+        <div class="card-index">${formatDateRange(card.dateDuration)}</div>
+        <div class="card-toolbar-actions">
+          ${readonly ? "" : buttonMarkup("text-link", "edit-card-date", "Edit", { cardId: card.id })}
+          ${readonly ? "" : buttonMarkup("text-link", "delete-card", "Delete", { cardId: card.id })}
+        </div>
       </div>
       <div class="card-content">
-        ${renderFieldRow("Date Duration", formatDateRange(card.dateDuration), readonly ? "" : buttonMarkup("text-link", "edit-card-date", "Edit", { cardId: card.id }))}
         ${renderFieldRow("Thing", renderTextValue(card.thing), readonly ? "" : buttonMarkup("text-link", "edit-card-thing", "Edit", { cardId: card.id }))}
         ${renderFieldRow("Data", renderTextValue(card.data), readonly ? "" : buttonMarkup("text-link", "edit-card-data", "Edit", { cardId: card.id }))}
+        ${showMoneyRows ? renderFieldRow("Expense", formatAmount(card.expense), readonly ? "" : buttonMarkup("text-link", "edit-card-expense", "Edit", { cardId: card.id })) : ""}
+        ${showMoneyRows ? renderFieldRow("Income", formatAmount(card.income), readonly ? "" : buttonMarkup("text-link", "edit-card-income", "Edit", { cardId: card.id })) : ""}
       </div>
+    </article>
+  `;
+}
+
+function renderMetaCard(label, value, action) {
+  return `
+    <article class="meta-card">
+      <div class="meta-heading">
+        <div class="meta-label">${label}</div>
+        ${action ? `<button class="text-link" data-action="${action}" type="button">Edit</button>` : ""}
+      </div>
+      <div class="meta-value">${value}</div>
     </article>
   `;
 }
@@ -357,6 +379,15 @@ function renderPriority(priority, status) {
   }
 
   return `<span class="priority-tag ${priority}">${capitalize(priority)}</span>`;
+}
+
+function formatAmount(value) {
+  const number = Number(value || 0);
+  if (Number.isInteger(number)) {
+    return String(number);
+  }
+
+  return number.toFixed(2);
 }
 
 function showPriorityEditor(project) {
@@ -570,6 +601,32 @@ function openCardTextModal(projectId, cardId, field, title) {
   });
 }
 
+function openCardAmountModal(projectId, cardId, field, title) {
+  const card = getCard(projectId, cardId);
+  if (!card) {
+    return;
+  }
+
+  openFormModal({
+    title,
+    body: `
+      <label class="form-label">
+        ${title}
+        <input class="text-input" type="number" step="0.01" name="value" value="${escapeAttribute(String(card[field] ?? 0))}" />
+      </label>
+    `,
+    onSubmit: (formData) => {
+      const raw = formData.get("value");
+      const number = raw === "" ? 0 : Number(raw);
+      if (Number.isNaN(number)) {
+        return false;
+      }
+
+      updateCard(projectId, cardId, { [field]: number });
+    },
+  });
+}
+
 function openDeleteCardModal(projectId, cardId) {
   openConfirmModal({
     title: "Delete Card",
@@ -739,13 +796,7 @@ function moveProjectToNextStatus(projectId) {
     project.status = "ongoing";
     project.priority = null;
     if (project.cards.length === 0) {
-      project.cards.unshift({
-        id: crypto.randomUUID(),
-        dateDuration: { start: null, end: null },
-        thing: "",
-        data: "",
-        updatedAt: new Date().toISOString(),
-      });
+      project.cards.unshift(createEmptyCard());
     }
   }
 
@@ -851,9 +902,9 @@ function normalizeBoard(board) {
       cards: Array.isArray(project.cards) ? project.cards : [],
     };
 
-    if (nextProject.cards.length === 0) {
-      nextProject.cards = [createEmptyCard()];
-    }
+    nextProject.cards = nextProject.cards.length === 0
+      ? [createEmptyCard()]
+      : nextProject.cards.map(normalizeCard);
 
     return nextProject;
   });
@@ -867,7 +918,17 @@ function createEmptyCard() {
     dateDuration: { start: null, end: null },
     thing: "",
     data: "",
+    expense: 0,
+    income: 0,
     updatedAt: new Date().toISOString(),
+  };
+}
+
+function normalizeCard(card) {
+  return {
+    ...card,
+    expense: Number(card.expense ?? 0),
+    income: Number(card.income ?? 0),
   };
 }
 
@@ -883,17 +944,28 @@ function exportBoardData() {
 
 async function resetBoardData() {
   const response = await fetch("./data/seed.json");
-  const seed = await response.json();
+  const seed = normalizeBoard(await response.json());
   appState.board = seed;
   persistAndRender();
 }
 
 function formatDateRange(dateDuration) {
   if (!dateDuration.start && !dateDuration.end) {
-    return '<span class="helper-text">未设置时间范围</span>';
+    return '<span class="helper-text">Date Duration</span>';
   }
 
   return `${dateDuration.start || "?"} - ${dateDuration.end || "?"}`;
+}
+
+function getCardTotals(cards) {
+  return cards.reduce(
+    (totals, card) => {
+      totals.expense += Number(card.expense || 0);
+      totals.income += Number(card.income || 0);
+      return totals;
+    },
+    { expense: 0, income: 0 }
+  );
 }
 
 function formatDateTime(isoString) {

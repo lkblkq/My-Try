@@ -305,6 +305,13 @@ button {
   padding: 16px;
 }
 
+.meta-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .meta-label {
   color: var(--muted);
   font-size: 12px;
@@ -317,10 +324,6 @@ button {
   min-height: 26px;
   font-size: 15px;
   line-height: 1.6;
-}
-
-.meta-actions {
-  margin-top: 12px;
 }
 
 .text-link {
@@ -376,9 +379,23 @@ button {
   gap: 16px;
 }
 
+.section-heading {
+  display: grid;
+  gap: 4px;
+}
+
 .section-title {
   margin: 0;
   font-size: 18px;
+}
+
+.section-metrics {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .cards-list {
@@ -399,10 +416,16 @@ button {
   gap: 16px;
 }
 
+.card-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .card-index {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--muted);
+  color: var(--text);
 }
 
 .card-content {
