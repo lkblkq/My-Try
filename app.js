@@ -666,6 +666,30 @@ function renderModal() {
 
   const form = elements.modalRoot.querySelector("#modal-form");
   if (form) {
+    form.dataset.composing = "false";
+
+    form.addEventListener("compositionstart", () => {
+      form.dataset.composing = "true";
+    });
+
+    form.addEventListener("compositionend", () => {
+      form.dataset.composing = "false";
+    });
+
+    form.addEventListener("keydown", (event) => {
+      const isTextarea = event.target instanceof HTMLTextAreaElement;
+      const isComposing = event.isComposing || event.keyCode === 229 || form.dataset.composing === "true";
+
+      if (event.key === "Enter" && isComposing) {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.key === "Enter" && isTextarea && !event.metaKey && !event.ctrlKey) {
+        return;
+      }
+    });
+
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       appState.modal?.onSubmit?.(form);
