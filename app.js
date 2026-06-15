@@ -1,4 +1,5 @@
 const STORAGE_KEY = "experience-board-v1";
+const SYNC_CONFIG_KEY = "experience-board-sync-v1";
 const STATUS_ORDER = ["ongoing", "prepare", "pending", "failed"];
 const STATUS_LABELS = {
   ongoing: "Ongoing",
@@ -6,10 +7,26 @@ const STATUS_LABELS = {
   pending: "Pending",
   failed: "Failed",
 };
+const GITHUB_SYNC_TARGET = {
+  owner: "lkblkq",
+  repo: "My-Try",
+  branch: "main",
+  path: "data/board-data.json",
+};
+const GITHUB_API_HEADERS = {
+  Accept: "application/vnd.github+json",
+  "X-GitHub-Api-Version": "2022-11-28",
+};
 
 const appState = {
   board: null,
   modal: null,
+  sync: {
+    token: "",
+    status: "Sync: local only",
+    pendingTimer: null,
+    isPushing: false,
+  },
 };
 
 const elements = {
@@ -17,6 +34,10 @@ const elements = {
   projectTabs: document.querySelector("#project-tabs"),
   detailView: document.querySelector("#detail-view"),
   addProjectButton: document.querySelector("#add-project-button"),
+  syncStatus: document.querySelector("#sync-status"),
+  syncSetupButton: document.querySelector("#sync-setup-button"),
+  syncPullButton: document.querySelector("#sync-pull-button"),
+  syncPushButton: document.querySelector("#sync-push-button"),
   exportButton: document.querySelector("#export-button"),
   resetButton: document.querySelector("#reset-button"),
   modalRoot: document.querySelector("#modal-root"),
@@ -26,6 +47,10 @@ const elements = {
 boot();
 
 async function boot() {
+  appState.sync = {
+    ...appState.sync,
+    ...loadSyncConfig(),
+  };
   const board = await loadBoard();
   appState.board = board;
   bindEvents();
@@ -33,15 +58,16 @@ async function boot() {
 }
 
 async function loadBoard() {
-  const cached = window.localStorage.getItem(STORAGE_KEY);
-  if (cached) {
-    return normalizeBoard(JSON.parse(cached));
-  }
+  const [localBoard, remoteBoard, seedBoard] = await Promise.all([
+    loadLocalBoard(),
+    fetchRemoteBoard(),
+    loadSeedBoard(),
+  ]);
 
-  const response = await fetch("./data/seed.json");
-  const seed = normalizeBoard(await response.json());
-  persist(seed);
-  return seed;
+  const board = chooseBoard(localBoard, remoteBoard, seedBoard);
+  persist(board, { scheduleSync: false, touch: false });
+  updateSyncStatus(appState.sync.token ? "Sync: GitHub ready" : "Sync: local only");
+  return board;
 }
 
 function bindEvents() {
@@ -49,6 +75,9 @@ function bindEvents() {
     openProjectModal();
   });
 
+  elements.syncSetupButton.addEventListener("click", openSyncSetupModal);
+  elements.syncPullButton.addEventListener("click", pullFromGitHub);
+  elements.syncPushButton.addEventListener("click", pushToGitHub);
   elements.exportButton.addEventListener("click", exportBoardData);
   elements.resetButton.addEventListener("click", resetBoardData);
 
@@ -165,6 +194,7 @@ function render() {
   renderProjectTabs();
   renderDetailView();
   renderModal();
+  renderSyncStatus();
 }
 
 function renderStatusNav() {
@@ -772,12 +802,12 @@ function setSelectedStatus(status) {
   appState.board.selectedStatus = status;
   const projects = getProjectsByStatus(status);
   appState.board.selectedProjectId = projects[0]?.id || null;
-  persistAndRender();
+  persistAndRender({ scheduleSync: false, touch: false });
 }
 
 function setSelectedProject(projectId) {
   appState.board.selectedProjectId = projectId;
-  persistAndRender();
+  persistAndRender({ scheduleSync: false, touch: false });
 }
 
 function addCard(projectId) {
@@ -886,17 +916,35 @@ function syncSelectionAfterRemoval(status) {
   appState.board.selectedProjectId = projects[0]?.id || null;
 }
 
-function persistAndRender() {
-  persist(appState.board);
+function persistAndRender(options = {}) {
+  persist(appState.board, options);
   render();
 }
 
-function persist(board) {
+function persist(board, options = {}) {
+  const { scheduleSync = true, touch = true } = options;
+  if (touch) {
+    board.meta = {
+      ...(board.meta || {}),
+      lastModifiedAt: new Date().toISOString(),
+    };
+  }
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(board));
+  if (scheduleSync) {
+    scheduleGitHubSync();
+  }
 }
 
 function normalizeBoard(board) {
-  board.projects = board.projects.map((project) => {
+  const nextBoard = {
+    ...board,
+    meta: {
+      ...(board.meta || {}),
+      lastModifiedAt: board.meta?.lastModifiedAt || getBoardTimestamp(board),
+    },
+  };
+
+  nextBoard.projects = board.projects.map((project) => {
     const nextProject = {
       ...project,
       cards: Array.isArray(project.cards) ? project.cards : [],
@@ -909,7 +957,7 @@ function normalizeBoard(board) {
     return nextProject;
   });
 
-  return board;
+  return nextBoard;
 }
 
 function createEmptyCard() {
@@ -943,10 +991,10 @@ function exportBoardData() {
 }
 
 async function resetBoardData() {
-  const response = await fetch("./data/seed.json");
-  const seed = normalizeBoard(await response.json());
+  const seed = await loadSeedBoard();
   appState.board = seed;
-  persistAndRender();
+  persist(appState.board, { scheduleSync: false, touch: false });
+  render();
 }
 
 function formatDateRange(dateDuration) {
@@ -996,4 +1044,255 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value);
+}
+
+function renderSyncStatus() {
+  elements.syncStatus.textContent = appState.sync.status;
+}
+
+function updateSyncStatus(text) {
+  appState.sync.status = text;
+  if (elements.syncStatus) {
+    elements.syncStatus.textContent = text;
+  }
+}
+
+function loadSyncConfig() {
+  const raw = window.localStorage.getItem(SYNC_CONFIG_KEY);
+  if (!raw) {
+    return { token: "" };
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    return { token: parsed.token || "" };
+  } catch {
+    return { token: "" };
+  }
+}
+
+function saveSyncConfig() {
+  window.localStorage.setItem(
+    SYNC_CONFIG_KEY,
+    JSON.stringify({ token: appState.sync.token || "" })
+  );
+}
+
+async function loadLocalBoard() {
+  const cached = window.localStorage.getItem(STORAGE_KEY);
+  if (!cached) {
+    return null;
+  }
+
+  try {
+    return normalizeBoard(JSON.parse(cached));
+  } catch {
+    return null;
+  }
+}
+
+async function loadSeedBoard() {
+  const response = await fetch("./data/seed.json");
+  return normalizeBoard(await response.json());
+}
+
+async function fetchRemoteBoard() {
+  try {
+    const response = await fetch(buildGitHubReadUrl(), {
+      headers: GITHUB_API_HEADERS,
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = await response.json();
+    if (!payload.content) {
+      return null;
+    }
+
+    return normalizeBoard(JSON.parse(decodeBase64Utf8(payload.content)));
+  } catch {
+    try {
+      const fallback = await fetch(`./data/board-data.json?ts=${Date.now()}`, { cache: "no-store" });
+      if (!fallback.ok) {
+        return null;
+      }
+      return normalizeBoard(await fallback.json());
+    } catch {
+      return null;
+    }
+  }
+}
+
+function chooseBoard(localBoard, remoteBoard, seedBoard) {
+  if (!localBoard && !remoteBoard) {
+    return seedBoard;
+  }
+
+  if (localBoard && !remoteBoard) {
+    return localBoard;
+  }
+
+  if (!localBoard && remoteBoard) {
+    return remoteBoard;
+  }
+
+  return getBoardTimestamp(remoteBoard) >= getBoardTimestamp(localBoard)
+    ? remoteBoard
+    : localBoard;
+}
+
+function getBoardTimestamp(board) {
+  const boardTime = board?.meta?.lastModifiedAt ? (Date.parse(board.meta.lastModifiedAt) || 0) : 0;
+  const projectTimes = (board?.projects || []).map((project) => Date.parse(project.updatedAt || 0) || 0);
+  return Math.max(boardTime, ...projectTimes, 0);
+}
+
+function scheduleGitHubSync() {
+  if (!appState.sync.token) {
+    return;
+  }
+
+  if (appState.sync.pendingTimer) {
+    window.clearTimeout(appState.sync.pendingTimer);
+  }
+
+  updateSyncStatus("Sync: queued for GitHub");
+  appState.sync.pendingTimer = window.setTimeout(() => {
+    pushToGitHub({ silent: true });
+  }, 1200);
+}
+
+async function openSyncSetupModal() {
+  openFormModal({
+    title: "GitHub Sync Token",
+    body: `
+      <label class="form-label">
+        Personal Access Token
+        <input class="text-input" type="password" name="token" value="${escapeAttribute(appState.sync.token)}" placeholder="输入 PAT，留空则清除" />
+      </label>
+      <div class="helper-text">这个 token 只保存在当前电脑。需要至少有 Contents: write 权限。</div>
+    `,
+    onSubmit: (formData) => {
+      appState.sync.token = formData.get("token").trim();
+      saveSyncConfig();
+      updateSyncStatus(appState.sync.token ? "Sync: GitHub ready" : "Sync: local only");
+    },
+  });
+}
+
+async function pullFromGitHub() {
+  updateSyncStatus("Sync: pulling from GitHub...");
+  const remoteBoard = await fetchRemoteBoard();
+  if (!remoteBoard) {
+    updateSyncStatus("Sync: pull failed");
+    return;
+  }
+
+  appState.board = remoteBoard;
+  persist(appState.board, { scheduleSync: false, touch: false });
+  render();
+  updateSyncStatus(`Sync: pulled ${formatDateTime(new Date().toISOString())}`);
+}
+
+async function pushToGitHub(options = {}) {
+  const { silent = false } = options;
+  if (!appState.sync.token) {
+    if (!silent) {
+      updateSyncStatus("Sync: token required");
+      openSyncSetupModal();
+    }
+    return false;
+  }
+
+  if (appState.sync.isPushing) {
+    return false;
+  }
+
+  appState.sync.isPushing = true;
+  if (!silent) {
+    updateSyncStatus("Sync: pushing to GitHub...");
+  }
+
+  try {
+    const sha = await fetchRemoteSha(appState.sync.token);
+    const body = {
+      message: `Sync board data ${new Date().toISOString()}`,
+      content: encodeBase64Utf8(JSON.stringify(appState.board, null, 2)),
+      branch: GITHUB_SYNC_TARGET.branch,
+    };
+
+    if (sha) {
+      body.sha = sha;
+    }
+
+    const response = await fetch(buildGitHubWriteUrl(), {
+      method: "PUT",
+      headers: {
+        ...GITHUB_API_HEADERS,
+        Authorization: `Bearer ${appState.sync.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub sync failed: ${response.status}`);
+    }
+
+    updateSyncStatus(`Sync: pushed ${formatDateTime(new Date().toISOString())}`);
+    return true;
+  } catch {
+    updateSyncStatus("Sync: push failed");
+    return false;
+  } finally {
+    appState.sync.isPushing = false;
+  }
+}
+
+async function fetchRemoteSha(token) {
+  const response = await fetch(buildGitHubReadUrl(), {
+    headers: {
+      ...GITHUB_API_HEADERS,
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error(`SHA fetch failed: ${response.status}`);
+  }
+
+  const payload = await response.json();
+  return payload.sha || null;
+}
+
+function buildGitHubReadUrl() {
+  const { owner, repo, path, branch } = GITHUB_SYNC_TARGET;
+  return `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+}
+
+function buildGitHubWriteUrl() {
+  const { owner, repo, path } = GITHUB_SYNC_TARGET;
+  return `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+}
+
+function encodeBase64Utf8(text) {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary);
+}
+
+function decodeBase64Utf8(base64) {
+  const binary = atob(base64.replace(/\n/g, ""));
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
 }

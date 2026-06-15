@@ -102,6 +102,10 @@ button {
   gap: 8px;
 }
 
+.status-footer-actions .ghost-button {
+  width: 100%;
+}
+
 .status-item {
   display: flex;
   align-items: center;

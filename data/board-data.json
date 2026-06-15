@@ -1,0 +1,121 @@
+{
+  "selectedStatus": "ongoing",
+  "selectedProjectId": "ongoing-1",
+  "meta": {
+    "lastModifiedAt": "2026-06-11T10:30:00.000Z"
+  },
+  "projects": [
+    {
+      "id": "ongoing-1",
+      "name": "项目1",
+      "status": "ongoing",
+      "previousStatus": null,
+      "why": "接下来两周要重点推进，已经开始执行。",
+      "risk": 2,
+      "priority": null,
+      "failedReason": "",
+      "updatedAt": "2026-06-11T10:30:00.000Z",
+      "cards": [
+        {
+          "id": "card-ongoing-1",
+          "dateDuration": {
+            "start": "2026-06-02",
+            "end": "2026-06-04"
+          },
+          "thing": "先做第一版页面骨架、状态切换和弹窗流转，确认整体交互顺手。",
+          "data": "当前以静态站点实现，数据先保存在浏览器本地，后续再同步到仓库 JSON。",
+          "expense": 1200,
+          "income": 3000,
+          "updatedAt": "2026-06-11T10:30:00.000Z"
+        },
+        {
+          "id": "card-ongoing-2",
+          "dateDuration": {
+            "start": "2026-06-06",
+            "end": "2026-06-08"
+          },
+          "thing": "补充失败恢复逻辑和字段展示细节。",
+          "data": "Failed 保留 previousStatus 和 failedReason。",
+          "expense": 800,
+          "income": 1800,
+          "updatedAt": "2026-06-11T10:30:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "prepare-1",
+      "name": "项目2",
+      "status": "prepare",
+      "previousStatus": null,
+      "why": "信息已收集完，准备正式开做。",
+      "risk": 3,
+      "priority": "high",
+      "failedReason": "",
+      "updatedAt": "2026-06-11T10:30:00.000Z",
+      "cards": [
+        {
+          "id": "card-prepare-1",
+          "dateDuration": {
+            "start": "2026-06-12",
+            "end": "2026-06-15"
+          },
+          "thing": "梳理状态字段、优先级、失败原因和恢复按钮文案。",
+          "data": "确认 Prepare -> Ongoing 时 Priority 不再主展示。",
+          "expense": 0,
+          "income": 0,
+          "updatedAt": "2026-06-11T10:30:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "pending-1",
+      "name": "项目3",
+      "status": "pending",
+      "previousStatus": null,
+      "why": "还在等更多上下文，暂时先挂起。",
+      "risk": 1,
+      "priority": "medium",
+      "failedReason": "",
+      "updatedAt": "2026-06-11T10:30:00.000Z",
+      "cards": [
+        {
+          "id": "card-pending-1",
+          "dateDuration": {
+            "start": "2026-06-20",
+            "end": "2026-06-23"
+          },
+          "thing": "等设计细节最后定版后，再推进下一步。",
+          "data": "目前先保留草稿内容。",
+          "expense": 0,
+          "income": 0,
+          "updatedAt": "2026-06-11T10:30:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "failed-1",
+      "name": "项目4",
+      "status": "failed",
+      "previousStatus": "prepare",
+      "why": "上一个方向尝试过，但资源不匹配。",
+      "risk": 4,
+      "priority": "low",
+      "failedReason": "当前依赖不齐，先回退，等条件成熟后再恢复。",
+      "updatedAt": "2026-06-11T10:30:00.000Z",
+      "cards": [
+        {
+          "id": "card-failed-1",
+          "dateDuration": {
+            "start": "2026-06-01",
+            "end": "2026-06-03"
+          },
+          "thing": "原本准备进入执行阶段，但关键条件没有满足。",
+          "data": "这条项目保留失败前的内容，恢复时回到原来的 Prepare。",
+          "expense": 0,
+          "income": 0,
+          "updatedAt": "2026-06-11T10:30:00.000Z"
+        }
+      ]
+    }
+  ]
+}

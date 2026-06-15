@@ -12,8 +12,11 @@
         <div class="panel-title">Status</div>
         <nav id="status-nav" class="status-nav" aria-label="Status navigation"></nav>
         <div class="status-footer">
-          <div class="helper-text">当前编辑结果保存在这个浏览器里。</div>
+          <div id="sync-status" class="helper-text">Sync: local only</div>
           <div class="status-footer-actions">
+            <button id="sync-setup-button" class="ghost-button" type="button">Sync Token</button>
+            <button id="sync-pull-button" class="ghost-button" type="button">Pull GitHub</button>
+            <button id="sync-push-button" class="ghost-button" type="button">Push GitHub</button>
             <button id="export-button" class="ghost-button" type="button">Export JSON</button>
             <button id="reset-button" class="ghost-button" type="button">Reset</button>
           </div>
