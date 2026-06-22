@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "ongoing-1",
   "meta": {
-    "lastModifiedAt": "2026-06-22T02:11:54.078Z"
+    "lastModifiedAt": "2026-06-22T02:12:02.789Z"
   },
   "projects": [
     {
@@ -14,7 +14,7 @@
       "risk": 2,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-22T02:11:54.078Z",
+      "updatedAt": "2026-06-22T02:12:02.789Z",
       "cards": [
         {
           "id": "9c415138-fd10-4597-9061-07acf0b3349b",
@@ -44,13 +44,13 @@
           "id": "card-ongoing-2",
           "dateDuration": {
             "start": "2026-06-15",
-            "end": "2026-06-18"
+            "end": "2026-06-16"
           },
           "thing": "初步构思, 其实这个是从一个应用的经历得到的灵感,大概就是他们自己有痛点,然后从小红书那里看到别人也有,于是就进行开发.\n\n搜了一下, 发现并没有美甲贴图的应用, 这样是不是会存在较大的潜力,而且可能更有实用性.\n\n用codex搭建了识别的能力,但是codex使用纯代码能力识别, 感觉效果并不好.",
           "data": "Failed 保留 previousStatus 和 failedReason。",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-22T02:11:54.077Z"
+          "updatedAt": "2026-06-22T02:12:02.789Z"
         }
       ]
     },
