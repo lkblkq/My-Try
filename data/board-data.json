@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "ongoing-1",
   "meta": {
-    "lastModifiedAt": "2026-06-17T02:06:24.559Z"
+    "lastModifiedAt": "2026-06-22T02:00:35.781Z"
   },
   "projects": [
     {
@@ -14,7 +14,7 @@
       "risk": 2,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-17T02:06:24.559Z",
+      "updatedAt": "2026-06-22T02:00:35.781Z",
       "cards": [
         {
           "id": "card-ongoing-1",
@@ -24,9 +24,9 @@
           },
           "thing": "先做第一版页面骨架、状态切换和弹窗流转，确认整体交互顺手。",
           "data": "当前以静态站点实现，数据先保存在浏览器本地，后续再同步到仓库 JSON。",
-          "expense": 1200,
+          "expense": 79,
           "income": 3000,
-          "updatedAt": "2026-06-11T10:30:00.000Z"
+          "updatedAt": "2026-06-22T02:00:35.781Z"
         },
         {
           "id": "card-ongoing-2",
