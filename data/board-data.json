@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "ongoing-1",
   "meta": {
-    "lastModifiedAt": "2026-06-22T02:12:23.271Z"
+    "lastModifiedAt": "2026-06-22T02:42:07.638Z"
   },
   "projects": [
     {
@@ -14,7 +14,7 @@
       "risk": 2,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-22T02:12:23.271Z",
+      "updatedAt": "2026-06-22T02:42:07.638Z",
       "cards": [
         {
           "id": "9c415138-fd10-4597-9061-07acf0b3349b",
@@ -34,11 +34,11 @@
             "start": "2026-06-16",
             "end": "2026-06-17"
           },
-          "thing": "先做第一版页面骨架、状态切换和弹窗流转，确认整体交互顺手。",
+          "thing": "上面纯代码识别手指的准确度比较低.\n\n所以找一些识别指甲的论文或者方案,甚至有没有直接用的代码.\n\n论文还是有的, 直接用的代码并不行, 反而找到很多测试的数据和测试的图片, 所以让codex参考论文方案搭建基础框架, 并且购买了测试的数据和图片用于后续的训练",
           "data": "当前以静态站点实现，数据先保存在浏览器本地，后续再同步到仓库 JSON。",
           "expense": 79,
           "income": 0,
-          "updatedAt": "2026-06-22T02:12:23.271Z"
+          "updatedAt": "2026-06-22T02:42:07.638Z"
         },
         {
           "id": "card-ongoing-2",
