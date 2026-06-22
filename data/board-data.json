@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "ongoing-1",
   "meta": {
-    "lastModifiedAt": "2026-06-22T02:43:47.249Z"
+    "lastModifiedAt": "2026-06-22T02:45:50.847Z"
   },
   "projects": [
     {
@@ -14,7 +14,7 @@
       "risk": 2,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-22T02:43:47.249Z",
+      "updatedAt": "2026-06-22T02:45:50.847Z",
       "cards": [
         {
           "id": "9c415138-fd10-4597-9061-07acf0b3349b",
@@ -22,11 +22,11 @@
             "start": "2026-06-19",
             "end": "2026-06-21"
           },
-          "thing": "因为无法链接公司vpn, 所以无法使用codex, 浪费了3天时间.",
+          "thing": "因为无法链接公司vpn, 所以无法使用codex, 浪费了3天时间.\n\n尝试使用了一下workbuddy, 发现识别手指都有问题, 虽然继续尝试,但是效果并不好.",
           "data": "",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-22T02:43:47.249Z"
+          "updatedAt": "2026-06-22T02:45:50.847Z"
         },
         {
           "id": "card-ongoing-1",
