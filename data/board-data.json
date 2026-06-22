@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "f02620ae-07b9-4cbc-afbb-64eda21c5f81",
   "meta": {
-    "lastModifiedAt": "2026-06-22T03:43:45.154Z"
+    "lastModifiedAt": "2026-06-22T03:44:59.053Z"
   },
   "projects": [
     {
@@ -14,7 +14,7 @@
       "risk": 1,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-22T03:43:45.154Z",
+      "updatedAt": "2026-06-22T03:44:59.053Z",
       "cards": [
         {
           "id": "b1f8f4ba-45fe-4cfd-9b60-65d18a03ee25",
@@ -23,11 +23,11 @@
             "end": "2026-06-21"
           },
           "summary": "",
-          "thing": "",
+          "thing": "查了一下, 现在不是很需要养号, 而是需要将自己的号一些“装饰”处理好,比如简介, 头像等, 处理完就可以发视频了,推荐平台:\n1.TikTok\n2.youtube short;\n3.reddit;\n4.ins等",
           "data": "",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-22T03:43:45.154Z"
+          "updatedAt": "2026-06-22T03:44:59.053Z"
         },
         {
           "id": "0c6d2fbd-2b34-4f9e-9a69-2c02dc58f3f0",
