@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "ongoing-1",
   "meta": {
-    "lastModifiedAt": "2026-06-22T03:00:24.465Z"
+    "lastModifiedAt": "2026-06-22T03:00:29.263Z"
   },
   "projects": [
     {
@@ -11,10 +11,10 @@
       "status": "ongoing",
       "previousStatus": null,
       "why": "拍照贴图美甲, 让用户能感知到美甲功能",
-      "risk": 2,
+      "risk": 1,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-22T03:00:24.465Z",
+      "updatedAt": "2026-06-22T03:00:29.263Z",
       "cards": [
         {
           "id": "d8db4fc6-ad43-4786-aad7-701de2fbe1f2",
