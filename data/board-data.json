@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "f02620ae-07b9-4cbc-afbb-64eda21c5f81",
   "meta": {
-    "lastModifiedAt": "2026-06-22T03:43:28.689Z"
+    "lastModifiedAt": "2026-06-22T03:43:45.154Z"
   },
   "projects": [
     {
@@ -14,8 +14,21 @@
       "risk": 1,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-22T03:43:28.689Z",
+      "updatedAt": "2026-06-22T03:43:45.154Z",
       "cards": [
+        {
+          "id": "b1f8f4ba-45fe-4cfd-9b60-65d18a03ee25",
+          "dateDuration": {
+            "start": "2026-06-20",
+            "end": "2026-06-21"
+          },
+          "summary": "",
+          "thing": "",
+          "data": "",
+          "expense": 0,
+          "income": 0,
+          "updatedAt": "2026-06-22T03:43:45.154Z"
+        },
         {
           "id": "0c6d2fbd-2b34-4f9e-9a69-2c02dc58f3f0",
           "dateDuration": {
