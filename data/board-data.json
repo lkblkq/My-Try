@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "ongoing-1",
   "meta": {
-    "lastModifiedAt": "2026-06-22T02:46:01.930Z"
+    "lastModifiedAt": "2026-06-22T02:47:04.414Z"
   },
   "projects": [
     {
@@ -14,7 +14,7 @@
       "risk": 2,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-22T02:46:01.930Z",
+      "updatedAt": "2026-06-22T02:47:04.414Z",
       "cards": [
         {
           "id": "d8db4fc6-ad43-4786-aad7-701de2fbe1f2",
@@ -22,11 +22,11 @@
             "start": "2026-06-22",
             "end": "2026-06-22"
           },
-          "thing": "",
+          "thing": "发现codex'写的版本, 就算识别到只有两个手指,依然会有5个框框补全所有手指,先修复问题,再看今天能不能开始训练",
           "data": "",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-22T02:46:01.930Z"
+          "updatedAt": "2026-06-22T02:47:04.413Z"
         },
         {
           "id": "9c415138-fd10-4597-9061-07acf0b3349b",
