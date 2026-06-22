@@ -176,6 +176,10 @@ function handleDetailClick(event) {
     openCardTextModal(project.id, actionTarget.dataset.cardId, "data", "Data");
   }
 
+  if (action === "edit-card-summary") {
+    openCardTextModal(project.id, actionTarget.dataset.cardId, "summary", "总结");
+  }
+
   if (action === "edit-card-income") {
     openCardAmountModal(project.id, actionTarget.dataset.cardId, "income", "Income");
   }
@@ -342,6 +346,7 @@ function renderFailedCallout(project) {
 function renderCard(project, card, index) {
   const readonly = project.status === "failed";
   const showMoneyRows = project.status === "ongoing";
+  const showSummaryRow = project.status === "ongoing";
   return `
     <article class="card-item">
       <div class="card-toolbar">
@@ -352,6 +357,7 @@ function renderCard(project, card, index) {
         </div>
       </div>
       <div class="card-content">
+        ${showSummaryRow ? renderFieldRow("总结", renderTextValue(card.summary), readonly ? "" : buttonMarkup("text-link", "edit-card-summary", "Edit", { cardId: card.id })) : ""}
         ${renderFieldRow("Thing", renderTextValue(card.thing), readonly ? "" : buttonMarkup("text-link", "edit-card-thing", "Edit", { cardId: card.id }))}
         ${renderFieldRow("Data", renderTextValue(card.data), readonly ? "" : buttonMarkup("text-link", "edit-card-data", "Edit", { cardId: card.id }))}
         ${showMoneyRows ? renderFieldRow("Expense", formatAmount(card.expense), readonly ? "" : buttonMarkup("text-link", "edit-card-expense", "Edit", { cardId: card.id })) : ""}
@@ -964,6 +970,7 @@ function createEmptyCard() {
   return {
     id: crypto.randomUUID(),
     dateDuration: { start: null, end: null },
+    summary: "",
     thing: "",
     data: "",
     expense: 0,
@@ -975,6 +982,7 @@ function createEmptyCard() {
 function normalizeCard(card) {
   return {
     ...card,
+    summary: card.summary ?? "",
     expense: Number(card.expense ?? 0),
     income: Number(card.income ?? 0),
   };
