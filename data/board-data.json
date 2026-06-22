@@ -1,10 +1,36 @@
 {
   "selectedStatus": "ongoing",
-  "selectedProjectId": "ongoing-1",
+  "selectedProjectId": "f02620ae-07b9-4cbc-afbb-64eda21c5f81",
   "meta": {
-    "lastModifiedAt": "2026-06-22T03:00:29.263Z"
+    "lastModifiedAt": "2026-06-22T03:41:55.591Z"
   },
   "projects": [
+    {
+      "id": "f02620ae-07b9-4cbc-afbb-64eda21c5f81",
+      "name": "宝可梦手办",
+      "status": "ongoing",
+      "previousStatus": null,
+      "why": "",
+      "risk": null,
+      "priority": null,
+      "failedReason": "",
+      "updatedAt": "2026-06-22T03:41:55.591Z",
+      "cards": [
+        {
+          "id": "0c6d2fbd-2b34-4f9e-9a69-2c02dc58f3f0",
+          "dateDuration": {
+            "start": null,
+            "end": null
+          },
+          "summary": "",
+          "thing": "",
+          "data": "",
+          "expense": 0,
+          "income": 0,
+          "updatedAt": "2026-06-22T03:41:55.591Z"
+        }
+      ]
+    },
     {
       "id": "ongoing-1",
       "name": "美甲小程序",
