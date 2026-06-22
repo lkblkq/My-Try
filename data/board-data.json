@@ -2,7 +2,7 @@
   "selectedStatus": "ongoing",
   "selectedProjectId": "ongoing-1",
   "meta": {
-    "lastModifiedAt": "2026-06-22T02:47:04.414Z"
+    "lastModifiedAt": "2026-06-22T02:59:59.233Z"
   },
   "projects": [
     {
@@ -14,7 +14,7 @@
       "risk": 2,
       "priority": null,
       "failedReason": "",
-      "updatedAt": "2026-06-22T02:47:04.414Z",
+      "updatedAt": "2026-06-22T02:59:59.233Z",
       "cards": [
         {
           "id": "d8db4fc6-ad43-4786-aad7-701de2fbe1f2",
@@ -26,7 +26,8 @@
           "data": "",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-22T02:47:04.413Z"
+          "updatedAt": "2026-06-22T02:47:04.413Z",
+          "summary": ""
         },
         {
           "id": "9c415138-fd10-4597-9061-07acf0b3349b",
@@ -38,7 +39,8 @@
           "data": "",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-22T02:45:50.847Z"
+          "updatedAt": "2026-06-22T02:45:50.847Z",
+          "summary": ""
         },
         {
           "id": "card-ongoing-1",
@@ -50,7 +52,8 @@
           "data": "-",
           "expense": 79,
           "income": 0,
-          "updatedAt": "2026-06-22T02:42:23.582Z"
+          "updatedAt": "2026-06-22T02:42:23.582Z",
+          "summary": ""
         },
         {
           "id": "card-ongoing-2",
@@ -62,7 +65,8 @@
           "data": "-",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-22T02:12:09.738Z"
+          "updatedAt": "2026-06-22T02:59:59.233Z",
+          "summary": "后面做方案之前一定要先查一下具体的内容:\n是否有现成可用的成熟方案或者技术,这样可以减少弯路"
         }
       ]
     },
@@ -87,7 +91,8 @@
           "data": "确认 Prepare -> Ongoing 时 Priority 不再主展示。",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-11T10:30:00.000Z"
+          "updatedAt": "2026-06-11T10:30:00.000Z",
+          "summary": ""
         }
       ]
     },
@@ -112,7 +117,8 @@
           "data": "目前先保留草稿内容。",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-11T10:30:00.000Z"
+          "updatedAt": "2026-06-11T10:30:00.000Z",
+          "summary": ""
         }
       ]
     },
@@ -137,7 +143,8 @@
           "data": "这条项目保留失败前的内容，恢复时回到原来的 Prepare。",
           "expense": 0,
           "income": 0,
-          "updatedAt": "2026-06-11T10:30:00.000Z"
+          "updatedAt": "2026-06-11T10:30:00.000Z",
+          "summary": ""
         }
       ]
     }
